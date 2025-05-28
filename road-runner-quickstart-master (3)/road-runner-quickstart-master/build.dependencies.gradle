@@ -17,15 +17,5 @@ dependencies {
     implementation 'org.ftclib.ftclib:vision:2.1.0' // vision
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
 
-
-    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.2-ALPHA'
-    implementation 'com.github.Thermal-Equilibrium:homeostasis-FTC:1.0.8'
-
-
-    implementation 'com.rowanmcalpin.nextftc:core:0.5.5-beta1'
-    implementation 'com.rowanmcalpin.nextftc:ftc:0.5.5-beta1'
-    implementation 'com.rowanmcalpin.nextftc:pedro:0.5.5-beta1'
-
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
 }
 
