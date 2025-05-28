@@ -38,9 +38,9 @@ public class PDFLCommand extends CommandBase {
     @Override
     public boolean isFinished() {
         // Check if the slides have reached the target position
-        return (Math.abs(liftSubsystem.getLeftSlideData()[0] - targetPosition) < 20|| Math.abs(liftSubsystem.getRightSlideData()[0] - targetPosition) < 20)&&(liftSubsystem.getLeftSlideData()[1] == 0 || liftSubsystem.getRightSlideData()[1] == 0)  ;
+        return (Math.abs(liftSubsystem.getTopMotorData()[0] - targetPosition) < 20)&&(liftSubsystem.getMiddleMotorData()[1] == 0 || liftSubsystem.getBottomMotorData()[1] == 0 || liftSubsystem.getMiddleMotorData()[1] == 0)  ;
     }
-
+//Math.abs(liftSubsystem.getMiddleMotorData()[0] - targetPosition) < 20|| Math.abs(liftSubsystem.getBottomMotorData()[0] - targetPosition) < 20 ||
     @Override
     public void end(boolean interrupted) {
         // Stop the slides when the command ends

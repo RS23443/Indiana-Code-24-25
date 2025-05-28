@@ -1,0 +1,87 @@
+package org.firstinspires.ftc.teamcode.Robot;
+
+public final class Constants {
+    private Constants(){
+        //restrict instantiations
+    }
+    public static final double[] outtakeSampleReset = {0.0,0.0,0.0,0.0, 0000};
+    /*
+    This is will cause the outtake arm to go into grabbing position
+    left_outtake_flip = outtakeSampleReset[0]
+    right_outtake_flip = outtakeSampleReset[1]
+    right_elbow = outtakeSampleReset[2]
+    outtake_claw = outtakeSampleReset[3]
+    the final number is the PDFL value for the lifts outtakeSampleReset[4]
+    */
+
+    public static final double[] outtakeSampleDrop = {0.0,0.0,0.0,0.0,0000};
+    /*
+    this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
+    left_outtake_flip = outtakeSampleDrop[0]
+    right_outtake_flip = outtakeSampleDrop[1]
+    right_elbow = outtakeSampleDrop[2]
+    outtake_claw = outtakeSampleDrop[3]
+    the final number is the PDFL value for the lifts outtakeSampleDrop[4]
+     */
+    public static final double[] outtakeSpecimenReset = {0.0,0.0,0.0,0.0,0000};
+    /*
+    this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
+    left_outtake_flip = outtakeSpecimenReset[0]
+    right_outtake_flip = outtakeSpecimenReset[1]
+    right_elbow = outtakeSpecimenReset[2]
+    outtake_claw = outtakeSpecimenReset[3]
+    the final number is the PDFL value for the lifts outtakeSpecimenReset[4]
+     */
+
+    public static final double[] outtakeSpecimenDrop = {0.0,0.0,0.0,0.0,0000};
+    /*
+    this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
+    left_outtake_flip = outtakeSpecimenDrop[0]
+    right_outtake_flip = outtakeSpecimenDrop[1]
+    right_elbow = outtakeSpecimenDrop[2]
+    outtake_claw = outtakeSpecimenDrop[3]
+    the final number is the PDFL value for the lifts, outtakeSpecimenDrop[4]
+     */
+
+    public static final double[] intakeActive = {0.0,0.0,0.5,0.5,0.0};
+     /*
+     This is will cause the intake to extend out and be primed to grab a block
+    left_intake_flip = intakeSampleReset[0]
+    right_intake_flip = intakeSampleReset[1]
+    left_differential = intakeSampleReset[2]
+    right_differential = intakeSampleReset[3]
+    intake_claw = intakeSampleReset[4] -> would need to be open
+    intake_extension = intakeSampleReset[5] - PDFL value
+     */
+
+    public static final double[] intakeSampleReset = {0.0,0.0,0.0,0.0,0.0, 0000};
+     /*
+    this will cause the intake to reel in the intake and have it ready for the outtake to grab the block
+    left_intake_flip = intakeSampleReset[0]
+    right_intake_flip = intakeSampleReset[1]
+    left_differential = intakeSampleReset[2]
+    right_differential = intakeSampleReset[3]
+    intake_claw = intakeSampleReset[4] -> would need to be closed
+    intake_extension = intakeSampleReset[5] - PDFL value
+
+     */
+
+    public static final double[] intakeSpecimenReset = {0.0,0.0,0.0,0.0,0.0, 0000};
+     /*
+    this will cause the intake to reel in the intake and have it ready to drop the block
+    left_intake_flip = intakeSpecimenReset[0]
+    right_intake_flip = intakeSpecimenReset[1]
+    left_differential = intakeSpecimenReset[2]
+    right_differential = intakeSpecimenReset[3]
+    intake_claw = intakeSpecimenReset[4] -> would need to be closed
+    intake_extension = intakeSpecimenReset[5] - PDFL value
+     */
+
+    public static final double[] intakeHorizontalSpin = {0.0,0.0};
+    /*
+    These constants are focused on spinning horizontally as everything else keeps a vertical spins
+    left_differential = intakeHorizontalSpin[2]
+    right_differential = intakeHorizontalSpin[3]
+     */
+
+}

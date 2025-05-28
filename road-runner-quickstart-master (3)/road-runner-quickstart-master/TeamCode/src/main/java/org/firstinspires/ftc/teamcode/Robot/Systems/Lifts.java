@@ -15,8 +15,9 @@ import org.firstinspires.ftc.teamcode.Robot.Sensing.Timer;
 public class Lifts extends SubsystemBase {
     public MultipleTelemetry telemetry;
 
-    private final DcMotorEx rightslides;
-    private final DcMotorEx leftslides;
+    private final DcMotorEx bottomMotor;
+    private final DcMotorEx middleMotor;
+    private final DcMotorEx topMotor;
     public static double i = 0.00, p = 0.012, d = 0.000  ;
     //public static double p1 = 0.02, i1 = 0.00, d1 = 0.00;
     public static double maxticks = 1200.00;
@@ -40,8 +41,9 @@ public class Lifts extends SubsystemBase {
 
 
     public Lifts(final HardwareMap hardwareMap, final double voltage) {
-        leftslides = hardwareMap.get(DcMotorEx.class, "leftslide");
-        rightslides = hardwareMap.get(DcMotorEx.class, "rightslide");
+        middleMotor = hardwareMap.get(DcMotorEx.class, "middleslide");
+        bottomMotor = hardwareMap.get(DcMotorEx.class, "bottomslide");
+        topMotor = hardwareMap.get(DcMotorEx.class,"topslide");
         controlHubVoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         kP = kP * (12/voltage);
         kD = kD * (12/voltage);
@@ -51,48 +53,57 @@ public class Lifts extends SubsystemBase {
         pdfLController.setDeadzone(deadzone);
         pdfLController.setHomedConstant(homedConstant);
         braketimer = new Timer();
-        leftslides.setDirection(DcMotorEx.Direction.REVERSE);
+        middleMotor.setDirection(DcMotorEx.Direction.REVERSE);
     }
     public void joystick(Gamepad gamepad, double speed){
-        rightslides.setPower(-gamepad.left_stick_y* speed);
-        leftslides.setPower(-gamepad.left_stick_y * speed);
+        middleMotor.setPower(-gamepad.left_stick_y* speed);
+        bottomMotor.setPower(-gamepad.left_stick_y* speed);
+        topMotor.setPower(-gamepad.left_stick_y * speed);
+
     }
     public void slidePID(int target) {
-        if(leftslides.getCurrentPosition() != target) {
+        if(middleMotor.getCurrentPosition() != target) {
             PIDController controllerleft = new PIDController(p, i, d);
             //PIDController controllerright= new PIDController(p1,i1,d1);
 
-            int armPos = leftslides.getCurrentPosition();
-            int armPos1 = rightslides.getCurrentPosition();
+            int armPos = middleMotor.getCurrentPosition();
+            int armPos1 = bottomMotor.getCurrentPosition();
+            int armPos2 = topMotor.getCurrentPosition();
             double pid = controllerleft.calculate(armPos, Math.min(target, maxTolerableTicks));
             //double pid1 = controllerright.calculate(armPos1, Math.min(target,maxTolerableTicks));
             double power = pid + kG;
 
 
-            leftslides.setPower(power);
-            rightslides.setPower(power);
+            middleMotor.setPower(power);
+            bottomMotor.setPower(power);
+            topMotor.setPower(power);
         }
 
     }
 
     public void slidePDFL(int target){
-        if(leftslides.getCurrentPosition() != target){
+        if(middleMotor.getCurrentPosition() != target){
 
-            int leftSlidePos = leftslides.getCurrentPosition();
-            int rightSlidePos = rightslides.getCurrentPosition();
+            int middleMotorPos = middleMotor.getCurrentPosition();
+            int bottomMotorPos = bottomMotor.getCurrentPosition();
+            int topMotorPos = topMotor.getCurrentPosition();
 
             // Calculate control signals
-            double error = target - leftSlidePos;
-            double error1 = target - rightSlidePos;
+            //double error = target - middleMotorPos;
+            //double error1 = target - bottomMotorPos;
+            double error2 = target - topMotorPos;
 
-            double powerLeft = pdfLController.run(error);
-            double powerRight = pdfLController.run(error1);
+            //double powerMiddle = pdfLController.run(error);
+            //double powerBottom = pdfLController.run(error1);
+            double powerTop = pdfLController.run(error2);
 
-            powerLeft = Math.max(-1, Math.min(powerLeft, 1));
-            powerRight = Math.max(-1, Math.min(powerRight, 1));
+            //powerMiddle = Math.max(-1, Math.min(powerMiddle, 1));
+            //powerBottom = Math.max(-1, Math.min(powerBottom, 1));
+            powerTop = Math.max(-1,Math.max(powerTop,1));
 
-            leftslides.setPower(powerLeft);
-            rightslides.setPower(powerLeft);
+            middleMotor.setPower(powerTop);
+            bottomMotor.setPower(powerTop);
+            topMotor.setPower(powerTop);
         }
     }
 
@@ -114,20 +125,25 @@ public class Lifts extends SubsystemBase {
         if (currentTime - lastUpdateTime < updateInterval) return; // Prevent rapid updates
         lastUpdateTime = currentTime; // Reset timer
 
-        int leftSlidePos = leftslides.getCurrentPosition();
-        int rightSlidePos = rightslides.getCurrentPosition();
+        //int middleMotorPos = middleMotor.getCurrentPosition();
+        //int bottomMotorPos = bottomMotor.getCurrentPosition();
+        int topMotorPos = topMotor.getCurrentPosition();
 
-        double errorLeft = targetHeight - leftSlidePos;
-        double errorRight = targetHeight - rightSlidePos;
+        //double errorMiddle = targetHeight - middleMotorPos;
+        //double errorBottom = targetHeight - bottomMotorPos;
+        double errorTop = targetHeight - topMotorPos;
 
-        double powerLeft = pdfLController.run(errorLeft);
-        double powerRight = pdfLController.run(errorRight);
+        //double powerMiddle = pdfLController.run(errorMiddle);
+        //double powerBottom = pdfLController.run(errorBottom);
+        double powerTop = pdfLController.run(errorTop);
 
-        powerLeft = Math.max(-1, Math.min(powerLeft, 1));
-        powerRight = Math.max(-1, Math.min(powerRight, 1));
+        //powerMiddle = Math.max(-1, Math.min(powerMiddle, 1));
+        //powerBottom = Math.max(-1, Math.min(powerBottom, 1));
+        powerTop = Math.max(-1, Math.min(powerTop, 1));
 
-        leftslides.setPower(powerLeft);
-        rightslides.setPower(powerRight);
+        middleMotor.setPower(powerTop);
+        bottomMotor.setPower(powerTop);
+        topMotor.setPower(powerTop);
         //if (Math.abs(errorLeft) < deadzone || Math.abs(errorRight) < deadzone) {
           //  pdflEnabled = false;  // Stop updating once the error is within the threshold
         //}
@@ -148,85 +164,44 @@ public class Lifts extends SubsystemBase {
         return false;
     }
 
-    public double[] getLeftSlideData(){
-        double leftslidePos = leftslides.getCurrentPosition();
-        double leftslideVelo = leftslides.getVelocity();
+    public double[] getMiddleMotorData(){
+        double leftslidePos = middleMotor.getCurrentPosition();
+        double leftslideVelo = middleMotor.getVelocity();
         return new double[] {leftslidePos,leftslideVelo};
     }
 
-    public double[] getRightSlideData() {
-        double rightslidePos = rightslides.getCurrentPosition();
-        double rightslideVelo = rightslides.getVelocity();
+    public double[] getBottomMotorData() {
+        double rightslidePos = bottomMotor.getCurrentPosition();
+        double rightslideVelo = bottomMotor.getVelocity();
         return new double[] {rightslidePos,rightslideVelo};
     }
 
-    public void stopSlides(){
-        leftslides.setPower(0.0);
-        rightslides.setPower(0.0);
+    public double[] getTopMotorData(){
+        double topMotorPos = bottomMotor.getCurrentPosition();
+        double topMotorVelo = bottomMotor.getVelocity();
+        return new double[] {topMotorPos,topMotorVelo};
     }
 
-    public void stopandreset(){
-        leftslides.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
-        rightslides.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+    public void stopSlides(){
+        middleMotor.setPower(0.0);
+        bottomMotor.setPower(0.0);
+        topMotor.setPower(0.0);
     }
+
 
     public void runslides(double power){
-        rightslides.setPower(power);
-        leftslides.setPower(power);
+        bottomMotor.setPower(power);
+        middleMotor.setPower(power);
+        topMotor.setPower(power);
     }
 
-    public void liftrunencoders(){
-        leftslides.setMode((DcMotor.RunMode.RUN_USING_ENCODER));
-        rightslides.setMode((DcMotor.RunMode.RUN_USING_ENCODER));
-
-    }
-
-    public void MoveLift(double power, double inches, long secondsToWait) {
-        // to go up go to 43 inches
-        double ticksPerInch = (1667 / 44.75); // need to change this value when the robot is built
-        int ticksToMove = (int) (inches * ticksPerInch);
-
-        leftslides.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightslides.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftslides.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightslides.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        rightslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        long endTime = System.currentTimeMillis() + secondsToWait * 1000;
-
-        while(ticksToMove < Math.abs(leftslides.getCurrentPosition())){
-            leftslides.setPower(power);
-            rightslides.setPower(power);
-            telemetry.addLine("slides going up");
-            telemetry.update();
-        }
-
-        leftslides.setPower(0.0);
-        rightslides.setPower(0.0);
-
-    }
-    public void setTargetPosition(int targetPosition, double power) {
-        leftslides.setTargetPosition(targetPosition);
-        rightslides.setTargetPosition(targetPosition);
-        rightslides.setPower(power);
-        leftslides.setPower(power);
-    }
 
     public boolean isAtTarget() {
-        return (!leftslides.isBusy() && !rightslides.isBusy());
+        return (!middleMotor.isBusy() && !bottomMotor.isBusy() && !topMotor.isBusy());
     }
 
     public void stop() {
         stopSlides();
-    }
-
-    public void setLiftsCoast(){
-        rightslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
     }
 
 }

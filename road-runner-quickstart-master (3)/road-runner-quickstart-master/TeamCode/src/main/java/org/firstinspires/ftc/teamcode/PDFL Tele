@@ -1,0 +1,287 @@
+package pedroPathing.Teleop;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import pedroPathing.ModulesToImport.Deposit.Commands.CloseCommand;
+import pedroPathing.ModulesToImport.Deposit.Commands.DropCommand;
+import pedroPathing.ModulesToImport.Deposit.Commands.OpenCommand;
+import pedroPathing.ModulesToImport.Deposit.Commands.ResetCommand;
+import pedroPathing.ModulesToImport.ExtraCodes.Sensors.LimelightBaseSystem;
+import pedroPathing.ModulesToImport.ExtraCodes.Timer;
+import pedroPathing.ModulesToImport.Deposit.deposit_subsystem;
+import pedroPathing.ModulesToImport.Hooks.hang_subsystem;
+import pedroPathing.ModulesToImport.Intake.Commands.IntakeExtendCommand;
+import pedroPathing.ModulesToImport.Intake.Commands.IntakeGrabCommand;
+import pedroPathing.ModulesToImport.Intake.Commands.IntakeOpenCommand;
+import pedroPathing.ModulesToImport.Intake.Commands.IntakeTransferSequenceCommand;
+import pedroPathing.ModulesToImport.Intake.intake_subsystem;
+import pedroPathing.ModulesToImport.Lifts.CommandBase.PDFLCommand;
+import pedroPathing.ModulesToImport.Lifts.lifts_subsystem;
+
+@TeleOp(name = "PDFL TeleOp")
+public class PDFLTele extends OpMode {
+    // Motors
+    public DcMotorEx frmotor, brmotor, flmotor, blmotor;
+    public hang_subsystem hooks;
+    public deposit_subsystem depo;
+    public intake_subsystem intake;
+    public lifts_subsystem lifts;
+    public LimelightBaseSystem limelight;
+
+    // Sensors
+    public ColorSensor clawColorSensor;
+    public Timer colorSensorTimer;
+
+    // Game State Variables
+    public boolean isBlockedGrabbed = false;
+    public boolean isSnapped = false;
+    public boolean isIntakeReadyToTransfer = false;
+    public boolean isOuttakeClawOpenForDeposit = false;
+    public boolean isBlockSwitchReady = false;
+    public int lb_counter = 1;
+    public double speed = 1.0;
+    public double angle;
+    private boolean lastLBState = false;
+
+    // Non-blocking sleep tracking
+    private long sleepEndTime = 0;
+    private boolean isSleeping = false;
+    private int sleepState = 0; // Tracks which action to execute after sleep
+    private int blockSwitchState = 0;
+    public VoltageSensor controlHubVoltageSensor;
+    public TouchSensor depositTouch;
+
+
+
+    /** This method is called once during `init` **/
+    @Override
+    public void init() {
+        controlHubVoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        frmotor = hardwareMap.get(DcMotorEx.class, "right_front_drive");
+        flmotor = hardwareMap.get(DcMotorEx.class, "left_front_drive");
+        brmotor = hardwareMap.get(DcMotorEx.class, "right_back_drive");
+        blmotor = hardwareMap.get(DcMotorEx.class, "left_back_drive");
+
+        frmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        blmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        brmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        flmotor.setDirection(DcMotor.Direction.REVERSE);
+        blmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        lifts = new lifts_subsystem(hardwareMap,controlHubVoltageSensor.getVoltage());
+        intake = new intake_subsystem(hardwareMap, "left_intake_flip", "right_intake_flip",
+                "left_intake_ext", "right_intake_ext", "right_intake_diffy", "left_intake_diffy", "intake_claw");
+        depo = new deposit_subsystem(hardwareMap, "left_outtake_flip", "right_outtake_flip",
+                "left_outtake_diffy", "right_outtake_diffy", "outtake_claw");
+        hooks = new hang_subsystem(hardwareMap, "right_hook", "left_hook");
+       // limelight = new LimelightBaseSystem(hardwareMap, "limelight");
+
+        clawColorSensor = hardwareMap.get(ColorSensor.class, "clawColorSensor");
+        depositTouch = hardwareMap.get(TouchSensor.class, "depositTouch"); // Name from the configuration file
+
+        colorSensorTimer = new Timer();
+        telemetry = FtcDashboard.getInstance().getTelemetry();
+        intake.initCamera(hardwareMap,telemetry);
+    }
+
+    /** Called continuously after `init`, before `start` **/
+    @Override
+    public void init_loop() {
+    }
+
+    /** Called once at the start of the OpMode **/
+    @Override
+    public void start() {
+    }
+
+    /** Main loop - runs continuously after `start` **/
+    @Override
+    public void loop() {
+        CommandScheduler.getInstance().run();
+        handleSleepLogic();
+        gp2_lb();
+        isDepositTouch();
+        String ColorDetcted = intake.ColorDetected();
+        telemetry.addData("Color detected", ColorDetcted);
+
+        if(isDepositTouch()){
+            handleBlockSwitch();
+            startNonBlockingSleep(200,3);
+        }
+
+
+        if (gamepad2.right_bumper) {
+            depo.teleBase();
+            isOuttakeClawOpenForDeposit = false;
+        }
+
+        if(gamepad2.y) {
+            new OpenCommand(depo)
+                    .andThen(new WaitCommand(100))
+                    .andThen(new ResetCommand(depo)) // Runs ResetCommand after OpenCommand finishes
+                    .schedule();
+            isOuttakeClawOpenForDeposit = true;
+        }
+/*
+        if (lifts.getLeftSlideData()[0] > 100 && lifts.getLeftSlideData()[1] == 0 && isOuttakeClawOpenForDeposit) {
+            //depo.teleBase();
+            lifts.slidePDFL(0);
+            lifts.setTarget(0);
+            lifts.enablePDControl(true);
+            isOuttakeClawOpenForDeposit = false;
+        }
+*/
+        // gamepad 1 - intkae controls
+        if (gamepad1.cross) new IntakeExtendCommand(intake).schedule();
+        if (gamepad1.circle) {
+            new IntakeGrabCommand(intake)
+                    .andThen(new IntakeTransferSequenceCommand(intake))
+                            .schedule();
+            //startNonBlockingSleep(350, 1); // Sleep before transfer
+        }
+        if (gamepad1.square) intake.intakespinhorizontal();
+        if (gamepad1.triangle) intake.intakespinvertical();
+
+        hooks.joysticks(gamepad2, 1.0);
+
+        // Mecanum Drive Controls
+        double rx = gamepad1.right_stick_x;
+        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        flmotor.setPower((y + rx + x) / denominator * speed);
+        blmotor.setPower((y - x + rx) / denominator * speed);
+        frmotor.setPower((y - rx - x) / denominator * speed);
+        brmotor.setPower((y - rx + x) / denominator * speed);
+
+        lifts.updatePDControl();
+
+        telemetry.update();
+        //extra code
+        //if (gamepad1.left_bumper) intake.bringinintake();
+        //if (gamepad1.right_bumper || isIntakeReadyToTransfer) {
+        //  intake.teleTransfer();
+        //isIntakeReadyToTransfer = false;
+        //}
+    }
+
+    /** Stops everything **/
+    @Override
+    public void stop() {
+    }
+
+    /** Non-blocking sleep logic **/
+    public void startNonBlockingSleep(long milliseconds, int state) {
+        sleepEndTime = System.currentTimeMillis() + milliseconds;
+        isSleeping = true;
+        sleepState = state;
+    }
+
+    public void handleSleepLogic() {
+        if (isSleeping && System.currentTimeMillis() >= sleepEndTime) {
+            isSleeping = false;
+
+            if (sleepState == 1) {
+                isIntakeReadyToTransfer = true;
+            }
+            else if (sleepState == 3) {
+                new DropCommand(depo).schedule(); // Ensure FTCLib correctly executes the command
+            }
+            else if (sleepState == 4) {
+                new ResetCommand(depo).schedule();
+                //isOuttakeClawOpenForDeposit = true;
+            }
+
+            sleepState = 0; // Reset state
+        }
+    }
+
+
+    /** Non-blocking block switch **/
+    public void handleBlockSwitch() {
+            new CloseCommand(depo)
+                    .andThen(new WaitCommand(150))
+                    .andThen(new IntakeOpenCommand(intake))
+                    .schedule();
+    }
+
+    /** Handles left bumper toggle **/
+    public void gp2_lb() {
+        boolean currentLBState = gamepad2.left_bumper;
+        if (currentLBState && !lastLBState) {
+            if (lb_counter == 1) {
+                new PDFLCommand(lifts,1000).schedule();
+                //lifts.slidePDFL(1000);
+                //lifts.setTarget(1000);
+                //lifts.enablePDControl(true);
+                lb_counter = 2;
+            } else {
+                new PDFLCommand(lifts,0).schedule();
+                //handleBlockSwitch();
+                //startNonBlockingSleep(200,3);
+                lb_counter = 1;
+            }
+        }
+        lastLBState = currentLBState;
+    }
+
+    public boolean isDepositTouch(){
+        return depositTouch.isPressed();
+    }
+
+    // Existing functions not in use, preserved as commented
+    /*
+    public void getColor() {
+        clawredValue = clawColorSensor.red();
+        clawgreenValue = clawColorSensor.green();
+        clawblueValue = clawColorSensor.blue();
+        clawalphaValue = clawColorSensor.alpha();
+    }
+
+    public void colorTelementry() {
+        telemetry.addData("redValue", "%.3f", clawredValue);
+        telemetry.addData("greenValue", "%.3f", clawgreenValue);
+        telemetry.addData("blueValue", "%.3f", clawblueValue);
+        telemetry.addData("alphaValue", "%.3f", clawalphaValue);
+        telemetry.update();
+    }
+
+    public void pollingSystemForColorTransfer() {
+        if (isBlockSwitchReady && !isBlockedGrabbed) {
+            colorSensorTimer.resetTimer();
+            colorSensorTimer.startTimer();
+            while (colorSensorTimer.getTimeMillis() < 6000) {
+                getColor();
+                colorTelementry();
+                if (clawalphaValue > 900 || clawblueValue > 850 || clawredValue > 850 && !isBlockedGrabbed) {
+                    sleepCode(200);
+                    blockSwitch();
+                    sleepCode(100);
+                    depo.dropose();
+                    sleepCode(100);
+                    isBlockedGrabbed = true;
+                    isBlockSwitchReady = false;
+                }
+            }
+            colorSensorTimer.stopTimer();
+        }
+    }
+    */
+
+}

@@ -30,8 +30,8 @@ public class CameraTest extends LinearOpMode {
     // --- Camera Configuration ---
     // Adjust these values based on your camera and desired resolution.
     // Common resolutions: 320x240, 640x480, 1280x720
-    int cameraWidth = 640;  // pixels
-    int cameraHeight = 480; // pixels
+    int cameraWidth = 1280;  // pixels
+    int cameraHeight = 720; // pixels
 
     // --- ROI Definition ---
     // Example: A rectangle in the bottom-center of the camera view.
@@ -53,10 +53,10 @@ public class CameraTest extends LinearOpMode {
 
         // --- Initialize ROI ---
         // Example: Define an ROI that is a 200x100 rectangle, 50px from the bottom, centered horizontally
-        int roiWidth = 200;
-        int roiHeight = 100;
+        int roiWidth = 1280;
+        int roiHeight = 720;
         int roiX = (cameraWidth - roiWidth) / 2; // Center horizontally
-        int roiY = cameraHeight - roiHeight - 50;    // 50px from the bottom edge
+        int roiY = (cameraHeight-roiHeight)/2;    // 50px from the bottom edge
         inspectionROI = new Rect(roiX, roiY, roiWidth, roiHeight);
 
 
