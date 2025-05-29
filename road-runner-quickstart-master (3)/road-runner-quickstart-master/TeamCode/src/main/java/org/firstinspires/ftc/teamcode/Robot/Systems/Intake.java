@@ -1,12 +1,19 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Robot.PIDController;
+
 public class Intake extends SubsystemBase {
+    public double kP, kI, kD, alpha = 0;
+    public  PIDController controller = new PIDController(kP, kI, kD, alpha);
     private final Servo lif;
     private final Servo rif;
     private final Servo rightdiffy;
     private final Servo leftdiffy;
+    private final DcMotorEx horizontalExtension;
     private final Servo claw;
 
 
@@ -16,6 +23,8 @@ public class Intake extends SubsystemBase {
         leftdiffy = hardwareMap.get(Servo.class, "left_differential");
         rightdiffy = hardwareMap.get(Servo.class, "right_differential");
         claw = hardwareMap.get(Servo.class, "intake_claw");
+        horizontalExtension = hardwareMap.get(DcMotorEx.class, "horizontal_extension");
+        horizontalExtension.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     public void setServoPosition (int servo, double position){
@@ -35,6 +44,19 @@ public class Intake extends SubsystemBase {
                 claw.setPosition(position);
                 break;
         }
+    }
+
+    public void setMotor(int target){
+        double power = controller.compute(horizontalExtension.getCurrentPosition(),target);
+        horizontalExtension.setPower(power);
+    }
+
+    public void setMotorPower(double power){
+        horizontalExtension.setPower(power);
+    }
+
+    public int getExtensionPosition(){
+        return horizontalExtension.getCurrentPosition();
     }
 }
 

@@ -4,7 +4,7 @@ public final class Constants {
     private Constants(){
         //restrict instantiations
     }
-    public static final double[] outtakeSampleReset = {0.0,0.0,0.0,0.0, 0000};
+    public static final double[] outtakeSampleReset = {0.0,0.0,0.0,0.0};
     /*
     This is will cause the outtake arm to go into grabbing position
     left_outtake_flip = outtakeSampleReset[0]
@@ -14,7 +14,7 @@ public final class Constants {
     the final number is the PDFL value for the lifts outtakeSampleReset[4]
     */
 
-    public static final double[] outtakeSampleDrop = {0.0,0.0,0.0,0.0,0000};
+    public static final double[] outtakeSampleDrop = {0.0,0.0,0.0,0.0};
     /*
     this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
     left_outtake_flip = outtakeSampleDrop[0]
@@ -23,7 +23,7 @@ public final class Constants {
     outtake_claw = outtakeSampleDrop[3]
     the final number is the PDFL value for the lifts outtakeSampleDrop[4]
      */
-    public static final double[] outtakeSpecimenReset = {0.0,0.0,0.0,0.0,0000};
+    public static final double[] outtakeSpecimenReset = {0.0,0.0,0.0,0.0};
     /*
     this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
     left_outtake_flip = outtakeSpecimenReset[0]
@@ -33,7 +33,7 @@ public final class Constants {
     the final number is the PDFL value for the lifts outtakeSpecimenReset[4]
      */
 
-    public static final double[] outtakeSpecimenDrop = {0.0,0.0,0.0,0.0,0000};
+    public static final double[] outtakeSpecimenDrop = {0.0,0.0,0.0,0.0};
     /*
     this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
     left_outtake_flip = outtakeSpecimenDrop[0]
@@ -54,7 +54,7 @@ public final class Constants {
     intake_extension = intakeSampleReset[5] - PDFL value
      */
 
-    public static final double[] intakeSampleReset = {0.0,0.0,0.0,0.0,0.0, 0000};
+    public static final double[] intakeSampleReset = {0.0,0.0,0.0,0.0,0.0};
      /*
     this will cause the intake to reel in the intake and have it ready for the outtake to grab the block
     left_intake_flip = intakeSampleReset[0]
@@ -66,7 +66,7 @@ public final class Constants {
 
      */
 
-    public static final double[] intakeSpecimenReset = {0.0,0.0,0.0,0.0,0.0, 0000};
+    public static final double[] intakeSpecimenReset = {0.0,0.0,0.0,0.0,0.0};
      /*
     this will cause the intake to reel in the intake and have it ready to drop the block
     left_intake_flip = intakeSpecimenReset[0]
@@ -82,6 +82,22 @@ public final class Constants {
     These constants are focused on spinning horizontally as everything else keeps a vertical spins
     left_differential = intakeHorizontalSpin[2]
     right_differential = intakeHorizontalSpin[3]
+     */
+
+    public static final int[] intakeExtensionValues = {0,0};
+    /*
+    these values are constants for maximum and minimum extension
+    minimum_value = intakeExtensionValues[0]
+    maximum_value = intakeExtensionValues[1]
+     */
+
+    public static final int[] liftExtensionValues = {0,0,0,0};
+    /*
+    these values are constants for lift position throughout the game
+    minimum-value = liftExtensionValues[0]
+    specimen high chamber = liftExtensionValues[1]
+    low basket = liftExtensionValues[2]
+    high basket = liftExtensionValues[3]
      */
 
 }
