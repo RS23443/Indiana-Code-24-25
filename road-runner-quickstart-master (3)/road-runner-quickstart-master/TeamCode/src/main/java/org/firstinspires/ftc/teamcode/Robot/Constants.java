@@ -4,7 +4,7 @@ public final class Constants {
     private Constants(){
         //restrict instantiations
     }
-    public static final double[] outtakeSampleReset = {0.0,0.0,0.0,0.0};
+    public static final double[] outtakeSampleReset = {0.0,1.0,1.0,0.8};
     /*
     This is will cause the outtake arm to go into grabbing position
     left_outtake_flip = outtakeSampleReset[0]
@@ -14,7 +14,7 @@ public final class Constants {
     the final number is the PDFL value for the lifts outtakeSampleReset[4]
     */
 
-    public static final double[] outtakeSampleDrop = {0.0,0.0,0.0,0.0};
+    public static final double[] outtakeSampleDrop = {0.3,0.7,0.35,0.63};
     /*
     this is will cause the outtake arm to grab and flip outwards ready to deposit Sample
     left_outtake_flip = outtakeSampleDrop[0]
@@ -43,7 +43,7 @@ public final class Constants {
     the final number is the PDFL value for the lifts, outtakeSpecimenDrop[4]
      */
 
-    public static final double[] intakeActive = {0.0,0.0,0.5,0.5,0.0};
+    public static final double[] intakeActive = {1,0.0,0.5,0.5,0.7};
      /*
      This is will cause the intake to extend out and be primed to grab a block
     left_intake_flip = intakeSampleReset[0]
@@ -54,7 +54,7 @@ public final class Constants {
     intake_extension = intakeSampleReset[5] - PDFL value
      */
 
-    public static final double[] intakeSampleReset = {0.0,0.0,0.0,0.0,0.0};
+    public static final double[] intakeSampleReset = {0.66,0.34,0.3,7,0.45};
      /*
     this will cause the intake to reel in the intake and have it ready for the outtake to grab the block
     left_intake_flip = intakeSampleReset[0]
@@ -77,14 +77,14 @@ public final class Constants {
     intake_extension = intakeSpecimenReset[5] - PDFL value
      */
 
-    public static final double[] intakeHorizontalSpin = {0.0,0.0};
+    public static final double[] intakeHorizontalSpin = {0.18,0.18};
     /*
     These constants are focused on spinning horizontally as everything else keeps a vertical spins
     left_differential = intakeHorizontalSpin[2]
     right_differential = intakeHorizontalSpin[3]
      */
 
-    public static final int[] intakeExtensionValues = {0,0,300};
+    public static final int[] intakeExtensionValues = {0,600,150};
     /*
     these values are constants for maximum and minimum extension
     minimum_value = intakeExtensionValues[0]

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -7,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Robot.PIDController;
 
 public class Intake extends SubsystemBase {
-    public double kP, kI, kD, alpha = 0;
+    public double kP = 0.01, kI = 0.00, kD = 0.000, alpha = 0.075;
     public  PIDController controller = new PIDController(kP, kI, kD, alpha);
     private final Servo lif;
     private final Servo rif;
@@ -24,7 +25,7 @@ public class Intake extends SubsystemBase {
         rightdiffy = hardwareMap.get(Servo.class, "right_differential");
         claw = hardwareMap.get(Servo.class, "intake_claw");
         horizontalExtension = hardwareMap.get(DcMotorEx.class, "horizontal_extension");
-        horizontalExtension.setDirection(DcMotorEx.Direction.REVERSE);
+        //horizontalExtension.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     public void setServoPosition (int servo, double position){
@@ -57,6 +58,10 @@ public class Intake extends SubsystemBase {
 
     public int getExtensionPosition(){
         return horizontalExtension.getCurrentPosition();
+    }
+
+    public void resetExtension(){
+        horizontalExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
 

@@ -204,5 +204,9 @@ public class Lifts extends SubsystemBase {
         stopSlides();
     }
 
+    public void stopandreset(){
+        topMotor.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+    }
+
 }
 
