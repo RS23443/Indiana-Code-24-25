@@ -47,9 +47,9 @@ public class FourSample extends LinearOpMode {
     int cameraWidth = 640; int cameraHeight = 480;
     Rect inspectionROI;
     private volatile boolean isWebcamStreaming = false;
-    private static final double SCAN_DURATION_SEC = 1.5;
+    private static final double SCAN_DURATION_SEC = 1;
     private ElapsedTime scanTimer = new ElapsedTime();
-    private static final int MAX_SCAN_ATTEMPTS = 2;
+    private static final int MAX_SCAN_ATTEMPTS = 3;
     // private static final double INCREMENTAL_MOVE_DISTANCE = 6.0; // Drivetrain move, replaced by intake extension
 
     public Intake intake;
@@ -223,22 +223,22 @@ public class FourSample extends LinearOpMode {
                 .endTrajectory();
         Action driveToPreloadScore = builderToPreloadScore.build();
 
-        TrajectoryActionBuilder builderToSample1 = builderToPreloadScore.fresh()
+        TrajectoryActionBuilder builderToSample1 = builderToPreloadScore.endTrajectory().fresh()
                 .splineToLinearHeading(sample1Pose,Math.PI/2) //lineToLinearHeading uses heading from sample1Pose
                 .endTrajectory();
         Action driveToSample1 = builderToSample1.build();
 
-        TrajectoryActionBuilder builderToSample2 = builderToSample1.fresh()
+        TrajectoryActionBuilder builderToSample2 = builderToSample1.endTrajectory().fresh()
                 .splineToLinearHeading(sample2Pose,Math.PI/2)
                 .endTrajectory();
         Action driveToSample2 = builderToSample2.build();
 
-        TrajectoryActionBuilder builderToSample3 = builderToSample2.fresh()
+        TrajectoryActionBuilder builderToSample3 = builderToSample2.endTrajectory().fresh()
                 .splineToLinearHeading(sample3Pose,Math.PI/2)
                 .endTrajectory();
         Action driveToSample3 = builderToSample3.build();
 
-        TrajectoryActionBuilder builderToScanPose = builderToSample3.fresh()
+        TrajectoryActionBuilder builderToScanPose = builderToSample3.endTrajectory().fresh()
                 .splineToLinearHeading(scanPose,Math.PI/2)
                 .endTrajectory();
         Action driveToScan = builderToScanPose.build();

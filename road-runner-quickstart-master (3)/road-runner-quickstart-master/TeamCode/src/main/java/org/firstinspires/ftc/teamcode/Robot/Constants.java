@@ -84,7 +84,7 @@ public final class Constants {
     right_differential = intakeHorizontalSpin[3]
      */
 
-    public static final int[] intakeExtensionValues = {0,0,0};
+    public static final int[] intakeExtensionValues = {0,0,300};
     /*
     these values are constants for maximum and minimum extension
     minimum_value = intakeExtensionValues[0]
