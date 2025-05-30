@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testing; // Adjust this package to your FTC project structure
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing; // Adjust this package to your FTC project structure
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
