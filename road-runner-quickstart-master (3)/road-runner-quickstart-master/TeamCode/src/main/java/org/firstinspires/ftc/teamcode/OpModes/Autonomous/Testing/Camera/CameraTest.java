@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing; // Adjust this package to your FTC project structure
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing.Camera; // Adjust this package to your FTC project structure
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,11 +21,11 @@ import java.util.List;
  * typically under a 'vision' package.
  */
 @TeleOp(name = "Yellow Detection Test", group = "Concept")
-// @Disabled // Uncomment this to hide from the OpMode list
+// @Disabled
 public class CameraTest extends LinearOpMode {
 
     OpenCvCamera webcam;
-    ContrastAndROI yellowPipeline; // UPDATED: Changed from YellowDetectionPipeline
+    ContrastAndROI yellowPipeline;
 
     // --- Camera Configuration ---
     // Adjust these values based on your camera and desired resolution.

@@ -1,37 +1,27 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-
-
 import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Deposit;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Intake;
-import org.firstinspires.ftc.teamcode.Robot.Systems.Lifts;
+// Lifts subsystem was removed from constructor in user's provided code, so not included here.
+// If Lifts is still needed, add 'Lifts lifts' to constructor and 'lifts' to addRequirements.
 
-public class SampleSwitchCommand extends CommandBase {
-    private final Intake intake;
-    private final Deposit deposit;
-    private final Lifts lifts;
+public class SampleSwitchCommand extends SequentialCommandGroup {
+    public final Intake intake;
+    public final Deposit deposit;
 
-    public SampleSwitchCommand(Intake intake, Deposit deposit, Lifts lifts) {
+    public SampleSwitchCommand(Intake intake, Deposit deposit) {
         this.intake = intake;
-        this.deposit  = deposit;
-        this.lifts = lifts;
-        addRequirements(intake, deposit, lifts);
-    }
+        this.deposit = deposit;
+        addRequirements(intake, deposit);
 
-    @Override
-    public void initialize() {
-        new PDFLCommand(lifts,20);
-        new WaitCommand(150);
-        deposit.setServoPosition(4,Constants.outtakeSpecimenDrop[3]);
-        new WaitCommand(150);
-        intake.setServoPosition(5,Constants.intakeActive[4]);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return true;
+        addCommands(
+                new InstantCommand(() -> deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]), deposit),
+                new WaitCommand(150),
+                new InstantCommand(() -> intake.setServoPosition(6, Constants.intakeActive[4]), intake)
+        );
     }
 }

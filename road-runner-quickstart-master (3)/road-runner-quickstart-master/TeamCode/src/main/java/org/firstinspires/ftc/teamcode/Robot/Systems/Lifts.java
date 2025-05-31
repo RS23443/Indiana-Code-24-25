@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -28,15 +29,18 @@ public class Lifts extends SubsystemBase {
     private PDFL pdfLController;
 
     // Tuning variables accessible via FTC Dashboard
-    public static double kP = 0.01, kD = 0.005, kF = 0.2, kL = 0.2;
+    public static double kP = 0.008, kD = 0.003, kF = 0.133, kL = 0.1;
     public static double deadzone = 20.0;
-    public static double homedConstant = -10.0;
+    public static double homedConstant = 0.0;
     public VoltageSensor controlHubVoltageSensor;
     public Timer braketimer;
     private int targetHeight;
     private boolean pdflEnabled = false;
     private long lastUpdateTime = 0;
     private final long updateInterval = 50; // Adjust this if needed
+    private double position;
+    private double velocity;
+    private double voltage;
 
 
 
@@ -53,7 +57,15 @@ public class Lifts extends SubsystemBase {
         pdfLController.setDeadzone(deadzone);
         pdfLController.setHomedConstant(homedConstant);
         braketimer = new Timer();
-        middleMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        topMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        bottomMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public void periodic(){
+        position = topMotor.getCurrentPosition();
+        velocity = topMotor.getVelocity();
+        voltage = controlHubVoltageSensor.getVoltage();
+
     }
     public void joystick(Gamepad gamepad, double speed){
         middleMotor.setPower(-gamepad.left_stick_y* speed);
@@ -99,7 +111,7 @@ public class Lifts extends SubsystemBase {
 
             //powerMiddle = Math.max(-1, Math.min(powerMiddle, 1));
             //powerBottom = Math.max(-1, Math.min(powerBottom, 1));
-            powerTop = Math.max(-1,Math.max(powerTop,1));
+            powerTop = Math.max(-1,Math.min(powerTop,1));
 
             middleMotor.setPower(powerTop);
             bottomMotor.setPower(powerTop);
@@ -177,8 +189,8 @@ public class Lifts extends SubsystemBase {
     }
 
     public double[] getTopMotorData(){
-        double topMotorPos = bottomMotor.getCurrentPosition();
-        double topMotorVelo = bottomMotor.getVelocity();
+        double topMotorPos = topMotor.getCurrentPosition();
+        double topMotorVelo = topMotor.getVelocity();
         return new double[] {topMotorPos,topMotorVelo};
     }
 

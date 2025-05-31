@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Robot.PIDController;
 
 public class Intake extends SubsystemBase {
-    public double kP = 0.01, kI = 0.00, kD = 0.000, alpha = 0.075;
+    public double kP = 0.01, kI = 0.00, kD = 0.000, alpha = 0;
     public  PIDController controller = new PIDController(kP, kI, kD, alpha);
     private final Servo lif;
     private final Servo rif;
@@ -16,6 +16,8 @@ public class Intake extends SubsystemBase {
     private final Servo leftdiffy;
     private final DcMotorEx horizontalExtension;
     private final Servo claw;
+    private int position;
+    private double velocity;
 
 
     public Intake(final HardwareMap hardwareMap) {
@@ -25,7 +27,13 @@ public class Intake extends SubsystemBase {
         rightdiffy = hardwareMap.get(Servo.class, "right_differential");
         claw = hardwareMap.get(Servo.class, "intake_claw");
         horizontalExtension = hardwareMap.get(DcMotorEx.class, "horizontal_extension");
+        horizontalExtension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //horizontalExtension.setDirection(DcMotorEx.Direction.REVERSE);
+    }
+
+    public void periodic(){
+        position = horizontalExtension.getCurrentPosition();
+        velocity = horizontalExtension.getVelocity();
     }
 
     public void setServoPosition (int servo, double position){
@@ -41,7 +49,8 @@ public class Intake extends SubsystemBase {
                 break;
             case 4:
                 rightdiffy.setPosition(position);
-            case 5:
+                break;
+            case 6:
                 claw.setPosition(position);
                 break;
         }
@@ -58,6 +67,9 @@ public class Intake extends SubsystemBase {
 
     public int getExtensionPosition(){
         return horizontalExtension.getCurrentPosition();
+    }
+    public double getHorizontalExtensionVelocity(){
+        return horizontalExtension.getVelocity();
     }
 
     public void resetExtension(){

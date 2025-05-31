@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing; // Or any suitable package for your tests
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing.Camera; // Or any suitable package for your tests
 
 import androidx.annotation.NonNull;
 
@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // Or @Autonomous if you prefer for testing
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket; // Required for Action's run method
 
