@@ -43,7 +43,7 @@ public final class Constants {
     the final number is the PDFL value for the lifts, outtakeSpecimenDrop[4]
      */
 
-    public static final double[] intakeActive = {1,0.0,0.5,0.5,0.7};
+    public static final double[] intakeActive = {0.9,0.1,0.5,0.5,0.7};
      /*
      This is will cause the intake to extend out and be primed to grab a block
     left_intake_flip = intakeSampleReset[0]
@@ -54,7 +54,7 @@ public final class Constants {
     intake_extension = intakeSampleReset[5] - PDFL value
      */
 
-    public static final double[] intakeSampleReset = {0.66,0.34,0.3,7,0.45};
+    public static final double[] intakeSampleReset = {0.53,0.47,0.25,75,0.48};
      /*
     this will cause the intake to reel in the intake and have it ready for the outtake to grab the block
     left_intake_flip = intakeSampleReset[0]
@@ -84,7 +84,7 @@ public final class Constants {
     right_differential = intakeHorizontalSpin[3]
      */
 
-    public static final int[] intakeExtensionValues = {0,600,150};
+    public static final int[] intakeExtensionValues = {100,600,150};
     /*
     these values are constants for maximum and minimum extension
     minimum_value = intakeExtensionValues[0]
@@ -92,7 +92,7 @@ public final class Constants {
     incremental_scans = intakeExtensionValues[2]
      */
 
-    public static final int[] liftExtensionValues = {0,0,0,0};
+    public static final int[] liftExtensionValues = {300,900,600,1600};
     /*
     these values are constants for lift position throughout the game
     minimum-value = liftExtensionValues[0]

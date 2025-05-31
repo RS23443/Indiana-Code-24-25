@@ -14,9 +14,12 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DepositDropPositionCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DepositResetCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.IntakeActiveCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.IntakeExtensionControlCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.IntakeGrabCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.IntakeHorizontalSpinCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.PDFLCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SampleSwitchCommand;
+import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.Robot.Systems.*;
 import org.firstinspires.ftc.teamcode.Robot.Sensing.*;
 
@@ -35,14 +38,11 @@ public class Tele1  extends OpMode {
 
     //Variables
     public boolean isIntakeReadyToTransfer = false;
-    public boolean isOuttakeClawOpenForDeposit = false;
-    private boolean lastLBState = false;
-    private boolean isSleeping = false;
+    public boolean lastGamepad1LeftBumperState = false;
+    private boolean areIntakeServosReady = false;
+    int currentState = 1;
     public double speed = 1.0;
     private double initialVoltage;
-    private long sleepEndTime = 0;
-    private int sleepState = 0;
-    public int lb_counter = 1;
 
 
 
@@ -75,12 +75,18 @@ public class Tele1  extends OpMode {
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap);
 
+        intake.setServoPosition(1, Constants.intakeSampleReset[0]);
+        intake.setServoPosition(2,Constants.intakeSampleReset[1]);
+        intake.setServoPosition(3,Constants.intakeSampleReset[2]);
+        intake.setServoPosition(4,Constants.intakeSampleReset[3]);
+
     }
 
     @Override
     public void loop() {
         CommandScheduler.getInstance().run();
         gp2_lb();
+        double intakePos = intake.getExtensionPosition();
         double time = voltageSensorTimer.getTimeMillis();
         double voltage = 0;
         // need to figure out what to do with this
@@ -97,18 +103,27 @@ public class Tele1  extends OpMode {
         }
 
         if (gamepad1.a) {
-                intake.setMotor(595);
+            areIntakeServosReady = false;
+            intake.setServoPosition(1, Constants.intakeActive[0]);
+            intake.setServoPosition(2, Constants.intakeActive[1]);
+            new WaitCommand(200);
+            intake.setServoPosition(3, Constants.intakeActive[2]);
+            intake.setServoPosition(4, Constants.intakeActive[3]);
+            new WaitCommand(200);
+            intake.setServoPosition(6, Constants.intakeActive[4]);
+            new SequentialCommandGroup(new WaitCommand(200), new IntakeExtensionControlCommand(intake,Constants.intakeExtensionValues[1])).schedule();
         }
 
-        if (intake.getExtensionPosition() > 300) {
-            new IntakeActiveCommand(intake);
-        }
+        //if (intakepos > 300 && !areIntakeServosReady) {
+          //  new IntakeActiveCommand(intake).schedule();
+           // areIntakeServosReady = true;
+       // }
 
 
         if(gamepad1.b){
-            new IntakeGrabCommand(intake);
-            isIntakeReadyToTransfer = true;
+            new SequentialCommandGroup(new IntakeGrabCommand(intake), new WaitCommand(200), new IntakeExtensionControlCommand(intake, Constants.intakeExtensionValues[0])).schedule();
         }
+
         // experimental stages
         /*if(isIntakeReadyToTransfer){
             limelight.FetchResults(); // need to change this, but can only do that when transfer is finalized
@@ -118,11 +133,15 @@ public class Tele1  extends OpMode {
         }*/
 
         if(/*(lifts.getTopMotorData()[0] >= 50 && lifts.getTopMotorData()[1] == 0 && isIntakeReadyToTransfer) ||*/  gamepad1.x){
-            new SequentialCommandGroup(new SampleSwitchCommand(intake,deposit, lifts),new WaitCommand(150), new DepositDropPositionCommand(deposit));
+            new SequentialCommandGroup(new SampleSwitchCommand(intake,deposit),new WaitCommand(150), new DepositDropPositionCommand(deposit)).schedule();
+        }
+
+        if(gamepad1.dpad_down){
+            new IntakeHorizontalSpinCommand(intake).schedule();
         }
 
         if(gamepad1.y){
-            new DepositResetCommand(deposit, lifts);
+            new DepositResetCommand(deposit, lifts).schedule();
         }
 
         if(gamepad1.right_bumper){
@@ -142,17 +161,25 @@ public class Tele1  extends OpMode {
 
 
     }
+
     public void gp2_lb() {
-        boolean currentLBState = gamepad2.left_bumper;
-        if (currentLBState && !lastLBState) {
-            if (lb_counter == 1) {
-                new PDFLCommand(lifts,1000).schedule();
-                lb_counter = 2;
-            } else {
-                new PDFLCommand(lifts,30).schedule();
-                lb_counter = 1;
+        boolean currentGamepad1LeftBumperState = gamepad1.left_bumper; // Read current state once
+
+        // Check for a rising edge: was not pressed, but now is pressed
+        if (currentGamepad1LeftBumperState && !lastGamepad1LeftBumperState) {
+            // The bumper was just pressed
+            if (currentState == 1) {
+                new PDFLCommand(lifts, 1600).schedule();
+                currentState = 2; // Toggle to the next state
+                telemetry.addLine("Lift moving to state 2 (e.g., High Position)");
+            } else { // currentState is 2 (or any other state that should go back to 1)
+                new PDFLCommand(lifts, 300).schedule();
+                currentState = 1; // Toggle back to the initial state
+                telemetry.addLine("Lift moving to state 1 (e.g., Low Position)");
             }
         }
-        lastLBState = currentLBState;
+
+        // Update the last known state of the bumper for the next loop iteration
+        lastGamepad1LeftBumperState = currentGamepad1LeftBumperState;
     }
 }

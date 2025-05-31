@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Robot.PIDController;
 
 public class Intake extends SubsystemBase {
-    public double kP = 0.01, kI = 0.00, kD = 0.000, alpha = 0.075;
+    public double kP = 0.01, kI = 0.00, kD = 0.000, alpha = 0;
     public  PIDController controller = new PIDController(kP, kI, kD, alpha);
     private final Servo lif;
     private final Servo rif;
@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
         rightdiffy = hardwareMap.get(Servo.class, "right_differential");
         claw = hardwareMap.get(Servo.class, "intake_claw");
         horizontalExtension = hardwareMap.get(DcMotorEx.class, "horizontal_extension");
+        horizontalExtension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //horizontalExtension.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
@@ -41,7 +42,8 @@ public class Intake extends SubsystemBase {
                 break;
             case 4:
                 rightdiffy.setPosition(position);
-            case 5:
+                break;
+            case 6:
                 claw.setPosition(position);
                 break;
         }

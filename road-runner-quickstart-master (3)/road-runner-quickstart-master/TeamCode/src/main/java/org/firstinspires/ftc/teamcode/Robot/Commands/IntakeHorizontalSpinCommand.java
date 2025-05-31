@@ -7,23 +7,18 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Intake;
 
-public class IntakeGrabCommand extends CommandBase {
+public class IntakeHorizontalSpinCommand extends CommandBase {
     private final Intake intake;
 
-    public IntakeGrabCommand(Intake intake) {
+    public IntakeHorizontalSpinCommand(Intake intake) {
         this.intake = intake;
         addRequirements(intake);
     }
 
     @Override
     public void initialize() {
-        intake.setServoPosition(6,Constants.intakeSampleReset[4]);
-        new WaitCommand(150);
-        intake.setServoPosition(1, Constants.intakeSampleReset[0]);
-        intake.setServoPosition(2,Constants.intakeSampleReset[1]);
-        new WaitCommand(200);
-        intake.setServoPosition(3,Constants.intakeSampleReset[2]);
-        intake.setServoPosition(4,Constants.intakeSampleReset[3]);
+        intake.setServoPosition(3, Constants.intakeHorizontalSpin[0]);
+        intake.setServoPosition(4, Constants.intakeHorizontalSpin[1]);
     }
 
     @Override

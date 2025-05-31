@@ -5,10 +5,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Robot.Sensing.Timer;
 import org.firstinspires.ftc.teamcode.Robot.Sensing.PDFL;
+import org.firstinspires.ftc.teamcode.Robot.Systems.Deposit;
 
 @Config
 @TeleOp(name="PDFL + Voltage Sensor Data", group="Tests")
@@ -16,9 +18,9 @@ public class PDFLVerticalTuner extends OpMode {
     private PDFL pdfLController;
 
     // Tuning variables accessible via FTC Dashboard
-    public static double kP = 0.01, kD = 0.005, kF = 0.2, kL = 0.2;
+    public static double kP = 0.008, kD = 0.003, kF = 0.133, kL = 0.1;
     public static double deadzone = 20.0;
-    public static double homedConstant = -10.0;
+    public static double homedConstant = 280.0;
     public static int target = 500;
 
     private DcMotorEx middleMotor;
@@ -26,6 +28,7 @@ public class PDFLVerticalTuner extends OpMode {
     private DcMotorEx topMotor;
     public VoltageSensor controlHubVoltageSensor;
     public Timer braketimer;
+    public Deposit deposit;
 
 
     @Override
@@ -43,13 +46,21 @@ public class PDFLVerticalTuner extends OpMode {
         middleMotor = hardwareMap.get(DcMotorEx.class, "middleslide");
         bottomMotor = hardwareMap.get(DcMotorEx.class, "bottomslide");
         topMotor = hardwareMap.get(DcMotorEx.class,"topslide");
-        middleMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        topMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        bottomMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //middleMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        deposit = new Deposit(hardwareMap);
 
         braketimer = new Timer();
 
 
         // Configure telemetry with FTC Dashboard
-        telemetry = FtcDashboard.getInstance().getTelemetry();
+            telemetry = FtcDashboard.getInstance().getTelemetry();
+
+        deposit.setServoPosition(1, 0.3);
+        deposit.setServoPosition(2, 0.7);
+        deposit.setServoPosition(3, 0.35);
+        deposit.setServoPosition(4, 0.63); // close
     }
 
     @Override

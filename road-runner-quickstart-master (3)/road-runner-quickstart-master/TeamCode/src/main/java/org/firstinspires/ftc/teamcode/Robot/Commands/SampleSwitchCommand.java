@@ -12,22 +12,17 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.Lifts;
 public class SampleSwitchCommand extends CommandBase {
     private final Intake intake;
     private final Deposit deposit;
-    private final Lifts lifts;
-
-    public SampleSwitchCommand(Intake intake, Deposit deposit, Lifts lifts) {
+    public SampleSwitchCommand(Intake intake, Deposit deposit) {
         this.intake = intake;
         this.deposit  = deposit;
-        this.lifts = lifts;
-        addRequirements(intake, deposit, lifts);
+        addRequirements(intake, deposit);
     }
 
     @Override
     public void initialize() {
-        new PDFLCommand(lifts,20);
+        deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]);
         new WaitCommand(150);
-        deposit.setServoPosition(4,Constants.outtakeSpecimenDrop[3]);
-        new WaitCommand(150);
-        intake.setServoPosition(5,Constants.intakeActive[4]);
+       intake.setServoPosition(6,Constants.intakeActive[4]);
     }
 
     @Override
