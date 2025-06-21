@@ -1,18 +1,16 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+package pedroPathing.Autonomous.Testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import pedroPathing.Robot.Constants;
+
 @TeleOp
 @Config
-public class ServoPositions extends OpMode {
+public class ServoPositionForSpec extends OpMode {
     private Servo lif;
     private Servo rif;
     private Servo rightdiffy;
@@ -36,6 +34,8 @@ public class ServoPositions extends OpMode {
 
         telemetry = FtcDashboard.getInstance().getTelemetry();
 
+        o_claw.setPosition(Constants.outtakeSampleDrop[3]);
+
     }
 
     @Override
@@ -43,63 +43,63 @@ public class ServoPositions extends OpMode {
         if(gamepad1.a){
             lof.setPosition(0.5);
             rof.setPosition(0.5);
-            right_elbow.setPosition(1);
+            right_elbow.setPosition(0.1);
         }
         if(gamepad1.b){
-            lof.setPosition(0.45);
-            rof.setPosition(0.55);
-            right_elbow.setPosition(1);
+            lof.setPosition(0.6);
+            rof.setPosition(0.4);
+            right_elbow.setPosition(0.0);
 
         }
 
         if(gamepad1.x){
-            lof.setPosition(0.4);
-            rof.setPosition(0.6);
-            right_elbow.setPosition(1);
+            right_elbow.setPosition(0.2);
 
         }
 
         if(gamepad1.right_bumper){
-            lof.setPosition(0.37);
-            rof.setPosition(0.63);
-            right_elbow.setPosition(1);
+            right_elbow.setPosition(0.05);
         }
 
         if(gamepad1.y){
-            lof.setPosition(0.3);
-            rof.setPosition(0.7);
-            right_elbow.setPosition(1);
+            right_elbow.setPosition(0.15);
 
         }
 
         if(gamepad2.a){
-            lif.setPosition(0.6);
-            rif.setPosition(0.4);
+            lof.setPosition(0.7);
+            rof.setPosition(0.3);
+            right_elbow.setPosition(0.5);
         }
 
         if(gamepad2.b){
-            leftdiffy.setPosition(0.25);
-            rightdiffy.setPosition(0.75);
+            lof.setPosition(0.75);
+            rof.setPosition(0.25);
+            right_elbow.setPosition(0.35);;
         }
 
         if(gamepad2.x){
-            leftdiffy.setPosition(0.2);
-            rightdiffy.setPosition(0.8);
+            lof.setPosition(0.8);
+            rof.setPosition(0.2);
+            right_elbow.setPosition(0.35);
         }
 
         if(gamepad2.y){
-            leftdiffy.setPosition(0.15);
-            rightdiffy.setPosition(0.85);
+            lof.setPosition(0.85);
+            rof.setPosition(0.15);
+            right_elbow.setPosition(0.4);
         }
 
         if(gamepad2.right_bumper){
-            leftdiffy.setPosition(0.1);
-            rightdiffy.setPosition(0.9);
+            lof.setPosition(0.9);
+            rof.setPosition(0.1);
+            right_elbow.setPosition(0.35);
         }
 
         if(gamepad2.left_bumper){
-            leftdiffy.setPosition(0);
-            rightdiffy.setPosition(1);
+            lof.setPosition(0.5);
+            rof.setPosition(0.5);
+            right_elbow.setPosition(0.1);
         }
 
 

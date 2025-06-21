@@ -1,0 +1,11 @@
+ @Override
+            public void preview(Canvas fieldOverlay) {
+                // You can draw a visual representation of the lift's target or current state
+                // on the FTC Dashboard field overlay if you wish.
+                // Example:
+                // fieldOverlay.setFill(initialized ? "blue" : "gray");
+                // fieldOverlay.fillRect(5, 70, 10, Math.max(1, (double)targetPosition / 50.0)); // Represent target
+                // if (initialized) {
+                //     fieldOverlay.setFill("green");
+                //     fieldOverlay.fillRect(20, 70, 10, Math.max(1, (double)liftSubsystem.getLiftPosition() / 50.0)); // Represent current
+                // }

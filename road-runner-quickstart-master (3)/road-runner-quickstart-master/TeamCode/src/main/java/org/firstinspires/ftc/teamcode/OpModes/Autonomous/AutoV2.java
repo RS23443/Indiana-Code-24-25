@@ -42,8 +42,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.Set;
 
 @Config
-@Autonomous(name = "Auto Version 1", group = "Autonomous")
-public class AutoV1 extends LinearOpMode {
+@Autonomous(name = "Auto Version 2", group = "Autonomous")
+public class AutoV2 extends LinearOpMode {
     public class Attachements{
         private Lifts lifts;
         private Intake intake;
@@ -82,7 +82,7 @@ public class AutoV1 extends LinearOpMode {
         }
 
         @SuppressLint("NotConstructor")
-         public class PDFLAction implements Action {
+        public class PDFLAction implements Action {
             private final Lifts liftSubsystem;
             private final int targetPosition;
             private boolean initialized = false;
@@ -224,71 +224,65 @@ public class AutoV1 extends LinearOpMode {
             }
         }
 
-            public class Deposit_Reset implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    deposit.setServoPosition(4, 0.8);
-                    new SleepAction(0.2);
-                    deposit.setServoPosition(3, 1);
-                    deposit.setServoPosition(1, 0.37);
-                    deposit.setServoPosition(2, 0.63);
-                    return false;
-                }
+        public class Deposit_Reset implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                deposit.setServoPosition(4, 0.8);
+                new SleepAction(0.2);
+                deposit.setServoPosition(3, 1);
+                deposit.setServoPosition(1, 0.48);
+                deposit.setServoPosition(2, 0.52);
+                return false;
             }
+        }
 
-            public class Deposit_Grab implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]);
-                    new SleepAction(0.15);
-                    deposit.setServoPosition(1,0.6);
-                    deposit.setServoPosition(2, 0.4);
-                    deposit.setServoPosition(3, 0.35);
-                    return false;
-                }
+        public class Deposit_Grab implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]);
+                new SleepAction(0.15);
+                deposit.setServoPosition(1, Constants.outtakeSampleDrop[0]);
+                deposit.setServoPosition(2, Constants.outtakeSampleDrop[1]);
+                deposit.setServoPosition(3, Constants.outtakeSampleDrop[2]);
+                return false;
             }
+        }
 
-            public class BlockSwitch implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    deposit.setServoPosition(4, 0.8);
-                    sleep(200);
-                    deposit.setServoPosition(3, 1);
-                    deposit.setServoPosition(1, 0.41);
-                    deposit.setServoPosition(2, 0.59);
-                    sleep(500);
-                    deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]);
-                    sleep(150);
-                    intake.setServoPosition(6, Constants.intakeActive[4]);
-                    return false;
-                }
+        public class BlockSwitch implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                deposit.setServoPosition(4, Constants.outtakeSampleDrop[3]);
+                new SleepAction(0.15);
+                intake.setServoPosition(6, Constants.intakeActive[4]);
+                return false;
             }
+        }
 
-            public class Intake_Active implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intake.setServoPosition(1, 0.8);
-                    intake.setServoPosition(2, 0.2);
-                    new SleepAction(0.2);
-                    intake.setServoPosition(3,0.5);
-                    intake.setServoPosition(4,0.5);
-                    new SleepAction(0.2);
-                    intake.setServoPosition(6, Constants.intakeActive[4]);
-                    return false;
-                }
+        public class Intake_Active implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                intake.setServoPosition(1, 0.8);
+                intake.setServoPosition(2, 0.2);
+                new SleepAction(0.2);
+                intake.setServoPosition(3, Constants.intakeActive[2]);
+                intake.setServoPosition(4, Constants.intakeActive[3]);
+                new SleepAction(0.2);
+                intake.setServoPosition(6, Constants.intakeActive[4]);
+                return false;
             }
+        }
 
-            public class Intake_Grab implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intake.setServoPosition(1, 0.6);
-                    intake.setServoPosition(2, 0.4);
-                    new SleepAction(0.2);
-                    intake.setServoPosition(3, 0.2);
-                    intake.setServoPosition(4, 0.8);
-                    return false;
-                }
+        public class Intake_Grab implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                intake.setServoPosition(1, 0.6);
+                intake.setServoPosition(2, 0.4);
+                new SleepAction(0.2);
+                intake.setServoPosition(3, 0.15);
+                intake.setServoPosition(4, 0.85);
+                return false;
             }
+        }
 
         public class Intake_PreGrab implements Action {
             @Override
@@ -302,93 +296,93 @@ public class AutoV1 extends LinearOpMode {
             }
         }
 
-            public class Intake45Degrees implements Action {
+        public class Intake45Degrees implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                intake.setServoPosition(1, Constants.intakeActive[0]);
+                intake.setServoPosition(2, Constants.intakeActive[1]);
+                new SleepAction(0.2);
+                intake.setServoPosition(3, Constants.intakeHorizontalSpin[2]);
+                intake.setServoPosition(4, Constants.intakeHorizontalSpin[3]);
+                new SleepAction(0.2);
+                intake.setServoPosition(6, Constants.intakeActive[4]);
+                return false;
+            }
+        }
+
+        public Action DepositOpen() {
+            return new InstantAction(new InstantFunction() {
                 @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intake.setServoPosition(1, Constants.intakeActive[0]);
-                    intake.setServoPosition(2, Constants.intakeActive[1]);
-                    new SleepAction(0.2);
-                    intake.setServoPosition(3, Constants.intakeHorizontalSpin[2]);
-                    intake.setServoPosition(4, Constants.intakeHorizontalSpin[3]);
-                    new SleepAction(0.2);
-                    intake.setServoPosition(6, Constants.intakeActive[4]);
-                    return false;
+                public void run() {
+                    deposit.setServoPosition(4, Constants.outtakeSampleReset[3]);
                 }
-            }
+            });
+        }
 
-            public Action DepositOpen() {
-                return new InstantAction(new InstantFunction() {
-                    @Override
-                    public void run() {
-                        deposit.setServoPosition(4, Constants.outtakeSampleReset[3]);
-                    }
-                });
-            }
+        public Action intakeDropDown() {
+            return new InstantAction(new InstantFunction() {
+                @Override
+                public void run() {
+                    intake.setServoPosition(1, 0.9);
+                    intake.setServoPosition(2, 0.1);
+                }
+            });
+        }
 
-            public Action intakeDropDown() {
-                return new InstantAction(new InstantFunction() {
-                    @Override
-                    public void run() {
-                        intake.setServoPosition(1, 0.9);
-                        intake.setServoPosition(2, 0.1);
-                    }
-                });
-            }
+        public Action IntakeClose() {
+            return new InstantAction(new InstantFunction() {
+                @Override
+                public void run() {
+                    intake.setServoPosition(6, 0.44);
+                }
+            });
+        }
 
-            public Action IntakeClose() {
-                return new InstantAction(new InstantFunction() {
-                    @Override
-                    public void run() {
-                        intake.setServoPosition(6, 0.44);
-                    }
-                });
-            }
-
-            public Action IntakeTransferClaw(){
+        public Action IntakeTransferClaw(){
             return  new InstantAction(new InstantFunction() {
                 @Override
                 public void run() {
                     intake.setServoPosition(6,0.45);
                 }
             });
-            }
+        }
 
 
-            public Action PDFLAction(int target) {
-                return new Attachements.PDFLAction(lifts, target);
-            }
+        public Action PDFLAction(int target) {
+            return new Attachements.PDFLAction(lifts, target);
+        }
 
-            public Action IntakePID(int target) {
-                return new IntakeExtension(intake, target);
-            }
+        public Action IntakePID(int target) {
+            return new IntakeExtension(intake, target);
+        }
 
-            public Action Deposit_Reset() {
-                return new Attachements.Deposit_Reset();
-            }
+        public Action Deposit_Reset() {
+            return new Attachements.Deposit_Reset();
+        }
 
-            public Action Deposit_Grab() {
-                return new Attachements.Deposit_Grab();
-            }
+        public Action Deposit_Grab() {
+            return new Attachements.Deposit_Grab();
+        }
 
-            public Action BlockSwitch() {
-                return new Attachements.BlockSwitch();
-            }
+        public Action BlockSwitch() {
+            return new Attachements.BlockSwitch();
+        }
 
-            public Action Intake_Active() {
-                return new Attachements.Intake_Active();
-            }
+        public Action Intake_Active() {
+            return new Attachements.Intake_Active();
+        }
 
-            public Action Intake_Grab() {
-                return new Attachements.Intake_Grab();
-            }
+        public Action Intake_Grab() {
+            return new Attachements.Intake_Grab();
+        }
 
-            public Action Intake_PreGrab(){
+        public Action Intake_PreGrab(){
             return new Attachements.Intake_PreGrab();
-            }
+        }
 
-            public Action Intake45Degrees() {
-                return new Attachements.Intake45Degrees();
-            }
+        public Action Intake45Degrees() {
+            return new Attachements.Intake45Degrees();
+        }
     }
     public MecanumDrive drivetrain;
     public Pose2d startpose = new Pose2d(0,-1,0);
@@ -403,19 +397,15 @@ public class AutoV1 extends LinearOpMode {
 
         TrajectoryActionBuilder preload = drivetrain.actionBuilder(startpose)
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-15.5,6.5,Math.toRadians(45)),0)
+                .splineToLinearHeading(new Pose2d(-16.2,6.5,Math.toRadians(45)),0)
                 .endTrajectory();
         TrajectoryActionBuilder s2 = preload.endTrajectory().fresh()
                 .setTangent(45)
-                .turnTo(Math.toRadians(69))
-                .setTangent(90)
-                .lineToYConstantHeading(10.5)
+                .splineToLinearHeading(new Pose2d(-7.5,27,Math.toRadians(90)),30)
                 .endTrajectory();
         TrajectoryActionBuilder scores2 = s2.endTrajectory().fresh()
-                .setTangent(0)
-                .turnTo(Math.toRadians(45))
                 .setTangent(90)
-                .lineToYConstantHeading(6)
+                .splineToLinearHeading(new Pose2d(-15.5,6.5,Math.toRadians(30)),0)
                 .endTrajectory();
         TrajectoryActionBuilder s3 = scores2.endTrajectory().fresh()
                 .setTangent(45)
@@ -425,13 +415,9 @@ public class AutoV1 extends LinearOpMode {
                 .endTrajectory();
         TrajectoryActionBuilder s3score = s3.endTrajectory().fresh()
                 .setTangent(0)
-                .turnTo(Math.toRadians(45))
+                .turnTo(Math.toRadians(54))
                 .setTangent(90)
                 .lineToYConstantHeading(6)
-                .endTrajectory();
-        TrajectoryActionBuilder s4 = s3score.fresh()
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(-7,12.5,Math.toRadians(148)),Math.toRadians(45))
                 .endTrajectory();
 
         Action traj1 = preload.build();
@@ -439,23 +425,18 @@ public class AutoV1 extends LinearOpMode {
         Action traj3 = scores2.build();
         Action traj4 = s3.build();
         Action traj5 = s3score.build();
-        Action traj6 = s4.build();
-        ParallelAction p1 = new ParallelAction(traj1,attachements.PDFLAction(1300),attachements.Deposit_Grab());
-        ParallelAction liftsPlusIntake = new ParallelAction(attachements.PDFLAction(-10), new SequentialAction(attachements.IntakePID(600),attachements.intakeDropDown(), new SleepAction(0.2),attachements.IntakeClose(),new SleepAction(0.5),attachements.Intake_Grab(), attachements.IntakePID(-5), attachements.IntakeTransferClaw()));
-        ParallelAction dropextend = new ParallelAction(attachements.DepositOpen(), attachements.IntakePID(200), attachements.Intake_Active());
-        ParallelAction p2 = new ParallelAction(traj2, attachements.PDFLAction(10));
-        ParallelAction p3 = new ParallelAction(traj3,attachements.BlockSwitch());
-        ParallelAction p4 = new ParallelAction(traj4, attachements.PDFLAction(10));
-        ParallelAction p5 = new ParallelAction(traj5,attachements.BlockSwitch());
-        ParallelAction liftsanddrop = new ParallelAction(attachements.PDFLAction(1400),attachements.Deposit_Grab());
         Actions.runBlocking(attachements.Deposit_Grab());
         Actions.runBlocking(attachements.Intake_Grab());
 
         waitForStart();
         Actions.runBlocking(
-                new SequentialAction(
-                        traj1, attachements.PDFLAction(1400),dropextend, new SleepAction(0.2),traj2,liftsPlusIntake, p3,liftsanddrop, attachements.Deposit_Grab(),new SleepAction(0.4),new ParallelAction(attachements.DepositOpen(), attachements.Intake_Active()),p4, new ParallelAction(attachements.PDFLAction(-5), new SequentialAction(attachements.IntakePID(600),attachements.intakeDropDown(), new SleepAction(0.2),attachements.IntakeClose(),new SleepAction(0.5),new SleepAction(0.4),attachements.Intake_Grab(), attachements.IntakePID(-5)), new SleepAction(1)),traj5,attachements.BlockSwitch(),new ParallelAction(attachements.PDFLAction(1400),attachements.Deposit_Grab()),attachements.Deposit_Grab(),new SleepAction(0.4),new ParallelAction(attachements.DepositOpen(), attachements.IntakePID(200), attachements.Intake_Active()),new ParallelAction(traj6,attachements.PDFLAction(-5)),attachements.IntakePID(630),attachements.intakeDropDown(), new SleepAction(0.2),attachements.IntakeClose(),new SleepAction(0.5),new SleepAction(0.4),attachements.Intake_Grab(), attachements.IntakePID(-5)
-        ));
+                new SequentialAction(new ParallelAction(traj1,attachements.PDFLAction(1400)),new SleepAction(0.5),attachements.DepositOpen(),new SleepAction(0.5),
+                        new ParallelAction(traj2,attachements.Intake_Active(),attachements.Deposit_Reset(), new SleepAction(0.2), attachements.PDFLAction(0)),
+                        new SleepAction(0.5),
+                        attachements.intakeDropDown(), new SleepAction(0.2),attachements.IntakeClose(),new SleepAction(0.5),attachements.Intake_Grab(),
+
+                        new ParallelAction(traj3,attachements.BlockSwitch()),new ParallelAction(attachements.PDFLAction(1400),attachements.Deposit_Grab()), attachements.DepositOpen()
+                ));
     }
 }
 
